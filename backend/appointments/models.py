@@ -1,7 +1,8 @@
 from django.db import models
+from healthmate.utils import TimeStampedModel
 from users.models import User
 
-class Appointment(models.Model):
+class Appointment(TimeStampedModel):
     name = models.CharField(max_length=255)
     date = models.DateField()
     time = models.TimeField()

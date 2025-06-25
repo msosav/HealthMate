@@ -1,14 +1,15 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import Exam
 from .serializers import ExamSerializer
 from django.conf import settings
 import os
+from rest_framework.permissions import IsAuthenticated
 
 class ExamViewSet(viewsets.ModelViewSet):
     queryset = Exam.objects.all()
     serializer_class = ExamSerializer
-    permission_classes = [permissions.AllowAny]  # Adjust as needed
+    permission_classes = [IsAuthenticated]  # Adjust as needed
 
     def create(self, request, *args, **kwargs):
         # Extract file and data
