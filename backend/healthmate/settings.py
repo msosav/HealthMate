@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'users',  # Added users app
     'exams',  # Added exams app
     'appointments',  # Added appointments app
+    'crisis',  # Added crisis app
 ]
 
 MIDDLEWARE = [

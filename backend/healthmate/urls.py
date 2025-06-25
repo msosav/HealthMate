@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/', include('users.urls')),
     path('api/', include('exams.urls')),  # Add exams endpoints
     path('api/', include('appointments.urls')),  # Add appointments endpoints
+    path('api/', include('crisis.urls')),  # Add crisis endpoints
 ]
 
 # Serve media files during development
