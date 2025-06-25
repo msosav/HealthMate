@@ -1,0 +1,17 @@
+astroid==3.3.10
+cffi==1.17.1
+colorama==0.4.6
+cryptography==44.0.2
+dill==0.4.0
+isort==6.0.1
+mccabe==0.7.0
+platformdirs==4.3.8
+pycparser==2.22
+pylint==3.3.7
+tomlkit==0.13.2
+uv==0.6.13
+asgiref==3.8.1
+django==5.2.3
+djangorestframework==3.16.0
+sqlparse==0.5.3
+tzdata==2025.2
