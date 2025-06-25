@@ -9,8 +9,8 @@ def exam_file_path(instance, filename):
 class Exam(models.Model):
     name = models.CharField(max_length=255)
     date = models.DateField()
-    file_path = models.FileField(upload_to=exam_file_path)
-    ai_summary = models.TextField(blank=True)
+    file = models.FileField(upload_to=exam_file_path, null=True, blank=True)  # Allow null/blank
+    ai_summary = models.TextField(null=True, blank=True)  # Allow null/blank
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='exams')
 
     def __str__(self):
