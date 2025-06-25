@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('users.urls')),
     path('api/', include('exams.urls')),  # Add exams endpoints
+    path('api/', include('appointments.urls')),  # Add appointments endpoints
 ]
 
 # Serve media files during development
