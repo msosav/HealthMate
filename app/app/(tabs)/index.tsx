@@ -1,65 +1,109 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  ScrollView,
+  View,
+  SafeAreaView,
+  Text,
+} from "react-native";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import React = require("react");
+import QuickAccessCard from "@/app/components/Home/QuickAccessCard";
+import UpcommingAppointmentsCard from "@/app/components/Home/UpcommingAppointmentsCard";
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: "#fff",
+      }}
+    >
+      <ScrollView className="p-8 bg-white">
+        <View>
+          <Text className="text-5xl text-primary">Welcome back,</Text>
+          <Text className="text-5xl font-bold text-primary">Miguel</Text>
+        </View>
+        <View className="mt-8">
+          <Text className="text-2xl text-primary">Quick Actions</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="mt-4"
+          >
+            <QuickAccessCard
+              iconName="flask"
+              info={{
+                label: "New exam",
+                type: "exam",
+              }}
+              squareColor="bg-secondary"
+              circleColor="bg-tertiary"
+              iconColor="#fff"
+            />
+            <QuickAccessCard
+              iconName="calendar-alt"
+              info={{
+                label: "New appointment",
+                type: "appointment",
+              }}
+              squareColor="bg-secondary"
+              circleColor="bg-tertiary"
+              iconColor="#fff"
+            />
+            <QuickAccessCard
+              iconName="briefcase-medical"
+              info={{
+                label: "New crisis",
+                type: "crisis",
+              }}
+              squareColor="bg-secondary"
+              circleColor="bg-tertiary"
+              iconColor="#fff"
+            />
+          </ScrollView>
+        </View>
+        <View className="mt-8">
+          <Text className="text-2xl text-primary">Upcomming appointments</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="mt-4"
+          >
+            <UpcommingAppointmentsCard
+              squareColor="bg-tertiary"
+              name="Blood Test"
+              date="Tuesday, April 17"
+              time="2:30 pm"
+              location="Main Hospital, Room 101"
+            />
+            <UpcommingAppointmentsCard
+              squareColor="bg-tertiary"
+              name="Blood Test"
+              date="Tuesday, April 17"
+              time="2:30 pm"
+              location="Main Hospital, Room 101"
+            />
+            <UpcommingAppointmentsCard
+              squareColor="bg-tertiary"
+              name="Blood Test"
+              date="Tuesday, April 17"
+              time="2:30 pm"
+              location="Main Hospital, Room 101"
+            />
+          </ScrollView>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    flexDirection: "column",
+    alignItems: "flex-start",
+    width: "100%", // ensure full width
+    gap: 0,
   },
   stepContainer: {
     gap: 8,
@@ -70,6 +114,6 @@ const styles = StyleSheet.create({
     width: 290,
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
   },
 });
