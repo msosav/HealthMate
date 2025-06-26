@@ -19,7 +19,10 @@ export default function HomeScreen() {
         backgroundColor: "#fff",
       }}
     >
-      <ScrollView className="p-8 bg-white">
+      <ScrollView
+        className="p-8 bg-white"
+        contentContainerStyle={{ paddingBottom: 80 }}
+      >
         <View>
           <Text className="text-5xl text-primary">Welcome back,</Text>
           <Text className="text-5xl font-bold text-primary">Miguel</Text>

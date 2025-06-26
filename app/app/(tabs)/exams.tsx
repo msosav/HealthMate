@@ -24,7 +24,10 @@ export default function ExamsScreen() {
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
       />
-      <ScrollView className="p-8 bg-white">
+      <ScrollView
+        className="p-8 bg-white"
+        contentContainerStyle={{ paddingBottom: 80 }}
+      >
         <View className="flex-row items-center justify-between mb-4">
           <Text className="text-4xl text-primary font-bold">My exams</Text>
           <Pressable
