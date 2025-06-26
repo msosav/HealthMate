@@ -6,6 +6,3 @@ from rest_framework.permissions import IsAuthenticated
 class CrisisViewSet(viewsets.ModelViewSet):
     queryset = Crisis.objects.all()
     serializer_class = CrisisSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)

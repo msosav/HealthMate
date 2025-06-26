@@ -3,16 +3,16 @@ import { Text, View, Modal, Pressable, TextInput } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Platform, TouchableOpacity } from "react-native";
 import { BlurView } from "expo-blur";
+import CrisesService from "@/app/services/crises";
 
 type NewCrisisModalProps = {
   visible: boolean;
   onClose: () => void;
 };
 
-const NewCrisisModal: React.FC<NewCrisisModalProps> = ({
-  visible,
-  onClose,
-}) => {
+const NewCrisisModal: React.FC<
+  NewCrisisModalProps & { onCreated?: () => void }
+> = ({ visible, onClose, onCreated }) => {
   const [name, setName] = React.useState("");
   const [startDate, setStartDate] = React.useState("");
   const [endDate, setEndDate] = React.useState("");
@@ -20,14 +20,30 @@ const NewCrisisModal: React.FC<NewCrisisModalProps> = ({
   const [showStartDatePicker, setStartDatePicker] = React.useState(false);
   const [showEndDatePicker, setEndDatePicker] = React.useState(false);
 
+  // Add local state for pickers
+  const [pickerStartDate, setPickerStartDate] = React.useState<Date | null>(
+    null
+  );
+  const [pickerEndDate, setPickerEndDate] = React.useState<Date | null>(null);
+
   // Function to close both pickers
   const closePickers = () => {
     setStartDatePicker(false);
     setEndDatePicker(false);
   };
 
-  const handleSave = () => {
-    // Save logic here
+  const handleSave = async () => {
+    try {
+      await CrisesService.create({
+        name,
+        start_date: startDate,
+        end_date: endDate,
+        comments,
+      });
+      if (onCreated) onCreated();
+    } catch (e) {
+      // Optionally handle error
+    }
     onClose();
     setName("");
     setStartDate("");
@@ -73,6 +89,9 @@ const NewCrisisModal: React.FC<NewCrisisModalProps> = ({
                 <TouchableOpacity
                   className="flex-1"
                   onPress={() => {
+                    setPickerStartDate(
+                      startDate ? new Date(startDate) : new Date()
+                    );
                     setStartDatePicker(true);
                   }}
                   activeOpacity={0.7}
@@ -89,6 +108,7 @@ const NewCrisisModal: React.FC<NewCrisisModalProps> = ({
                 <TouchableOpacity
                   className="flex-1"
                   onPress={() => {
+                    setPickerEndDate(endDate ? new Date(endDate) : new Date());
                     setEndDatePicker(true);
                   }}
                   activeOpacity={0.7}
@@ -105,14 +125,20 @@ const NewCrisisModal: React.FC<NewCrisisModalProps> = ({
               </View>
               {showStartDatePicker && (
                 <DateTimePicker
-                  value={startDate ? new Date(startDate) : new Date()}
+                  value={
+                    pickerStartDate ||
+                    (startDate ? new Date(startDate) : new Date())
+                  }
                   mode="date"
                   display={Platform.OS === "ios" ? "spinner" : "default"}
                   themeVariant="light"
                   onChange={(_, selectedDate) => {
-                    setStartDatePicker(false);
                     if (selectedDate) {
+                      setPickerStartDate(selectedDate);
                       setStartDate(selectedDate.toISOString().split("T")[0]);
+                      setStartDatePicker(false);
+                    } else {
+                      setStartDatePicker(false);
                     }
                   }}
                 />
@@ -120,15 +146,18 @@ const NewCrisisModal: React.FC<NewCrisisModalProps> = ({
               {showEndDatePicker && (
                 <DateTimePicker
                   value={
-                    endDate ? new Date(`1970-01-01T${endDate}:00`) : new Date()
+                    pickerEndDate || (endDate ? new Date(endDate) : new Date())
                   }
                   mode="date"
                   display={Platform.OS === "ios" ? "spinner" : "default"}
                   themeVariant="light"
                   onChange={(_, selectedDate) => {
-                    setEndDatePicker(false);
                     if (selectedDate) {
+                      setPickerEndDate(selectedDate);
                       setEndDate(selectedDate.toISOString().split("T")[0]);
+                      setEndDatePicker(false);
+                    } else {
+                      setEndDatePicker(false);
                     }
                   }}
                 />

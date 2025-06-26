@@ -10,9 +10,64 @@ import {
 } from "react-native";
 import CrisisCard from "@/app/components/Crises/CrisisCard";
 import NewCrisisModal from "@/app/components/Crises/NewCrisisModal";
+import CrisesService from "@/app/services/crises";
 
 export default function CrisesScreen() {
   const [modalVisible, setModalVisible] = React.useState(false);
+  const [crises, setCrises] = React.useState<any[]>([]);
+
+  const fetchCrises = async () => {
+    try {
+      const response = await CrisesService.list();
+      setCrises(response.data);
+    } catch (e) {
+      setCrises([]);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchCrises();
+  }, []);
+
+  // Group crises by month and year
+  const groupedCrises = React.useMemo(() => {
+    const groups: { [key: string]: any[] } = {};
+    crises.forEach((crisis) => {
+      if (!crisis.start_date) return;
+      const [year, month] = crisis.start_date.split("-");
+      const key = `${new Date(Number(year), Number(month) - 1).toLocaleString(
+        undefined,
+        { month: "long" }
+      )} ${year}`;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(crisis);
+    });
+    // Sort by year and month descending
+    return Object.entries(groups)
+      .sort((a, b) => {
+        const [aMonth, aYear] = a[0].split(" ");
+        const [bMonth, bYear] = b[0].split(" ");
+        if (aYear !== bYear) return Number(bYear) - Number(aYear);
+        return (
+          new Date(`${bMonth} 1, 2000`).getMonth() -
+          new Date(`${aMonth} 1, 2000`).getMonth()
+        );
+      })
+      .map(([title, data]) => ({ title, data }));
+  }, [crises]);
+
+  // Helper to format date as 'Day, Month Date'
+  function formatDate(dateStr: string) {
+    if (!dateStr) return "";
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const d = new Date(year, month - 1, day);
+    return d.toLocaleDateString(undefined, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    });
+  }
+
   return (
     <SafeAreaView
       style={{
@@ -23,6 +78,7 @@ export default function CrisesScreen() {
       <NewCrisisModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
+        onCreated={fetchCrises}
       />
       <ScrollView
         className="p-8 bg-white"
@@ -40,48 +96,22 @@ export default function CrisesScreen() {
             </Text>
           </Pressable>
         </View>
-        <View>
-          <Text className="text-2xl text-primary mb-2">June 2025</Text>
-          <CrisisCard
-            info={{
-              name: "Cold",
-              comments:
-                "I went outside when I was raining and forgot to wear an umbrella",
-              startDate: "Monday, June 9",
-              endDate: "Friday, June 13",
-            }}
-          ></CrisisCard>
-          <CrisisCard
-            info={{
-              name: "Cold",
-              comments:
-                "I went outside when I was raining and forgot to wear an umbrella",
-              startDate: "Monday, June 9",
-              endDate: "Friday, June 13",
-            }}
-          ></CrisisCard>
-        </View>
-        <View>
-          <Text className="text-2xl text-primary mb-2">May 2025</Text>
-          <CrisisCard
-            info={{
-              name: "Cold",
-              comments:
-                "I went outside when I was raining and forgot to wear an umbrella",
-              startDate: "Monday, May 9",
-              endDate: "Friday, May 13",
-            }}
-          ></CrisisCard>
-          <CrisisCard
-            info={{
-              name: "Cold",
-              comments:
-                "I went outside when I was raining and forgot to wear an umbrella",
-              startDate: "Monday, May 9",
-              endDate: "Friday, May 13",
-            }}
-          ></CrisisCard>
-        </View>
+        {groupedCrises.map((section) => (
+          <View key={section.title}>
+            <Text className="text-2xl text-primary mb-2">{section.title}</Text>
+            {section.data.map((crisis, idx) => (
+              <CrisisCard
+                key={crisis.id || idx}
+                info={{
+                  name: crisis.name,
+                  comments: crisis.comments,
+                  startDate: formatDate(crisis.start_date),
+                  endDate: formatDate(crisis.end_date),
+                }}
+              />
+            ))}
+          </View>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
