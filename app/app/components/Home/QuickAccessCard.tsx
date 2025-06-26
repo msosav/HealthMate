@@ -3,6 +3,7 @@ import { Text, View, TouchableOpacity } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import NewAppointmentModal from "@/app/components/Appointments/NewAppointmentModal";
 import NewCrisisModal from "@/app/components/Crises/NewCrisisModal";
+import NewExamModal from "@/app/components/Exams/NewExamModal";
 
 type QuickAccessCardProps = {
   squareColor?: string;
@@ -46,6 +47,12 @@ const QuickAccessCard: React.FC<QuickAccessCardProps> = ({
       )}
       {info.type === "crisis" && (
         <NewCrisisModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+        />
+      )}
+      {info.type === "exam" && (
+        <NewExamModal
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
         />
