@@ -129,9 +129,14 @@ export default function AppointmentsScreen() {
         backgroundColor: "#fff",
       }}
     >
-      <ScrollView
+      <View
         className="p-8 bg-white"
-        contentContainerStyle={{ paddingBottom: 80 }}
+        style={{
+          flex: 1,
+          padding: 32,
+          backgroundColor: "#fff",
+          paddingBottom: 80,
+        }}
       >
         <View className="flex-row items-center justify-between mb-4">
           <Text className="text-4xl text-primary font-bold">
@@ -160,7 +165,7 @@ export default function AppointmentsScreen() {
           }}
           markingType="custom"
           style={{
-            height: 400,
+            marginBottom: 16,
           }}
           onDayPress={(day: DateData) => setSelected(day.dateString)}
           onMonthChange={(monthObj) => {
@@ -227,8 +232,9 @@ export default function AppointmentsScreen() {
             />
           )}
           stickySectionHeadersEnabled={false}
+          contentContainerStyle={{ paddingBottom: 80 }}
         />
-      </ScrollView>
+      </View>
       <NewAppointmentModal
         visible={modalVisible}
         onClose={() => {
