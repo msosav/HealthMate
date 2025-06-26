@@ -33,21 +33,30 @@ export default function HomeScreen() {
           >
             <QuickAccessCard
               iconName="flask"
-              label="New exam"
+              info={{
+                label: "New exam",
+                type: "exam",
+              }}
               squareColor="bg-secondary"
               circleColor="bg-tertiary"
               iconColor="#fff"
             />
             <QuickAccessCard
               iconName="calendar-alt"
-              label="New appointment"
+              info={{
+                label: "New appointment",
+                type: "appointment",
+              }}
               squareColor="bg-secondary"
               circleColor="bg-tertiary"
               iconColor="#fff"
             />
             <QuickAccessCard
               iconName="briefcase-medical"
-              label="New crisis"
+              info={{
+                label: "New crisis",
+                type: "crisis",
+              }}
               squareColor="bg-secondary"
               circleColor="bg-tertiary"
               iconColor="#fff"
