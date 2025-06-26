@@ -1,7 +1,9 @@
+import { mainColor, secondaryColor } from "@/constants/Colors";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import React, { useState } from "react";
 import { Text, View, SafeAreaView, ScrollView, Pressable } from "react-native";
 import { Calendar, DateData } from "react-native-calendars";
+import AppointmentCard from "@/app/components/Appointments/AppointmentCard";
 
 export default function AppointmentsScreen() {
   // Mock data: Replace with your real data source
@@ -37,7 +39,10 @@ export default function AppointmentsScreen() {
         backgroundColor: "#fff",
       }}
     >
-      <ScrollView className="p-8 bg-white">
+      <ScrollView
+        className="p-8 bg-white"
+        contentContainerStyle={{ paddingBottom: 80 }} // Add extra bottom padding for bottom bar
+      >
         <View className="flex-row items-center justify-between mb-4">
           <Text className="text-4xl text-primary font-bold">
             My appointments
@@ -59,7 +64,7 @@ export default function AppointmentsScreen() {
               [selected]: {
                 ...(markedDates[selected] || {}),
                 selected: true,
-                selectedColor: "#007AFF",
+                selectedColor: mainColor,
               },
             }),
           }}
@@ -78,10 +83,10 @@ export default function AppointmentsScreen() {
                   style={{
                     color:
                       state === "disabled"
-                        ? "#d1d5db"
+                        ? secondaryColor
                         : selected === date?.dateString
                         ? "#fff"
-                        : "#1e293b",
+                        : mainColor,
                     backgroundColor:
                       selected === date?.dateString ? "#007AFF" : undefined,
                     borderRadius: 16,
@@ -95,7 +100,7 @@ export default function AppointmentsScreen() {
                 {eventCount && (
                   <View
                     style={{
-                      backgroundColor: "#f59e42",
+                      backgroundColor: secondaryColor,
                       borderRadius: 8,
                       paddingHorizontal: 6,
                       marginTop: 2,
@@ -111,7 +116,24 @@ export default function AppointmentsScreen() {
           }}
         />
         <View>
-          {/* You can show the list of appointments for the selected day here */}
+          <Text className="text-2xl text-primary">June 26</Text>
+          <AppointmentCard
+            info={{
+              name: "Blood Test",
+              comments: "2 hours of fasting before test",
+              date: "Monday, June 9",
+              time: "2:30 pm",
+              location: "Saint John’s Hospital",
+            }}
+          ></AppointmentCard>
+          <AppointmentCard
+            info={{
+              name: "Dermatology",
+              date: "Monday, June 9",
+              time: "2:30 pm",
+              location: "Saint John’s Hospital",
+            }}
+          ></AppointmentCard>
         </View>
       </ScrollView>
     </SafeAreaView>
