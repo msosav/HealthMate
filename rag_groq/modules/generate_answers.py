@@ -56,9 +56,9 @@ def run_rag_pipeline(pdf_path=None, question="", output_path=None, guideline_ind
         # Build a meaningful question using the exam data
         question = (
             f"The following are results from a patient's medical report:\n\n"
-            f"{patient_text[:2000]}\n\n"  # limit to avoid token overload
+            f"{patient_text[:2000]}\n\n"
             "Based on the guidelines, what do these results mean? "
-            "Provide an explanation and any medical recommendations. Do not ask for more information."
+            "Reply in **no more than 3 short sentences**, be concise."
         )
 
     print("🤖 Running QA chain with guideline context only...")
