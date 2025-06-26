@@ -1,18 +1,53 @@
 import { mainColor, secondaryColor } from "@/constants/Colors";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import React, { useState } from "react";
-import { Text, View, SafeAreaView, ScrollView, Pressable } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Text,
+  View,
+  SafeAreaView,
+  ScrollView,
+  Pressable,
+  SectionList,
+} from "react-native";
 import { Calendar, DateData } from "react-native-calendars";
 import AppointmentCard from "@/app/components/Appointments/AppointmentCard";
 import NewAppointmentModal from "@/app/components/Appointments/NewAppointmentModal";
+import AppointmentsService from "@/app/services/appointments";
 
 export default function AppointmentsScreen() {
-  // Mock data: Replace with your real data source
-  const events: Record<string, number> = {
-    "2025-06-26": 2,
-    "2025-06-27": 1,
-    "2025-06-29": 3,
+  const [selected, setSelected] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [events, setEvents] = useState<Record<string, number>>({});
+  const [visibleMonth, setVisibleMonth] = useState<number>(
+    new Date().getMonth()
+  );
+  const [visibleYear, setVisibleYear] = useState<number>(
+    new Date().getFullYear()
+  );
+
+  // Move fetchAppointments outside useEffect so it can be called elsewhere
+  const fetchAppointments = async () => {
+    try {
+      const response = await AppointmentsService.list();
+      const data = response.data;
+      setAppointments(data);
+      // Count events per date
+      const eventCounts: Record<string, number> = {};
+      data.forEach((appt: any) => {
+        if (appt.date) {
+          eventCounts[appt.date] = (eventCounts[appt.date] || 0) + 1;
+        }
+      });
+      setEvents(eventCounts);
+    } catch (error) {
+      // Optionally handle error
+    }
   };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
 
   // Prepare markedDates for Calendar
   const markedDates = Object.fromEntries(
@@ -25,14 +60,79 @@ export default function AppointmentsScreen() {
           container: { backgroundColor: "#e0e7ff" },
           text: { color: "#1e293b" },
         },
-        // Add a custom property for event count
         eventCount: count,
       },
     ])
   );
 
-  const [selected, setSelected] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
+  // Group appointments by date and sort by time
+  const groupedAppointments = React.useMemo(() => {
+    const groups: { [date: string]: any[] } = {};
+    appointments.forEach((appt) => {
+      if (!groups[appt.date]) groups[appt.date] = [];
+      groups[appt.date].push(appt);
+    });
+    // Sort each group by time
+    Object.keys(groups).forEach((date) => {
+      groups[date].sort((a, b) => (a.time > b.time ? 1 : -1));
+    });
+    // Convert to SectionList format
+    return Object.entries(groups)
+      .sort(([dateA], [dateB]) => (dateA > dateB ? 1 : -1))
+      .map(([date, data]) => {
+        // Parse as UTC to avoid timezone offset
+        const [year, month, day] = date.split("-").map(Number);
+        const localDate = new Date(Date.UTC(year, month - 1, day + 1));
+        return {
+          title: localDate.toLocaleDateString(undefined, {
+            month: "long",
+            day: "numeric",
+          }),
+          data,
+        };
+      });
+  }, [appointments]);
+
+  // Only show appointments for the visible month/year
+  const filteredGroupedAppointments = React.useMemo(() => {
+    return groupedAppointments.filter((section) => {
+      // Parse the date from the section title
+      if (!section.data.length) return false;
+      // Use the first appointment's date string (YYYY-MM-DD)
+      const apptDate = section.data[0].date;
+      const [year, month] = apptDate.split("-").map(Number);
+      return month === visibleMonth + 1 && year === visibleYear;
+    });
+  }, [groupedAppointments, visibleMonth, visibleYear]);
+
+  // Helper to format time as 'h:mm a' or 'ha'
+  function formatTime(timeStr: string) {
+    if (!timeStr) return "";
+    // Accepts 'HH:mm' or 'HH:mm:ss'
+    const [hourStr, minStr = "00"] = timeStr.split(":");
+    let hour = parseInt(hourStr, 10);
+    const min = parseInt(minStr, 10);
+    const ampm = hour >= 12 ? "pm" : "am";
+    hour = hour % 12;
+    if (hour === 0) hour = 12;
+    if (min === 0) {
+      return `${hour}${ampm}`;
+    } else {
+      return `${hour}:${min.toString().padStart(2, "0")}${ampm}`;
+    }
+  }
+
+  // Helper to format date as 'Friday, April 27'
+  function formatDate(dateStr: string) {
+    if (!dateStr) return "";
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const d = new Date(year, month - 1, day);
+    return d.toLocaleDateString(undefined, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    });
+  }
 
   return (
     <SafeAreaView
@@ -41,9 +141,14 @@ export default function AppointmentsScreen() {
         backgroundColor: "#fff",
       }}
     >
-      <ScrollView
+      <View
         className="p-8 bg-white"
-        contentContainerStyle={{ paddingBottom: 80 }} // Add extra bottom padding for bottom bar
+        style={{
+          flex: 1,
+          padding: 32,
+          backgroundColor: "#fff",
+          paddingBottom: 80,
+        }}
       >
         <View className="flex-row items-center justify-between mb-4">
           <Text className="text-4xl text-primary font-bold">
@@ -72,9 +177,13 @@ export default function AppointmentsScreen() {
           }}
           markingType="custom"
           style={{
-            height: 400,
+            marginBottom: 16,
           }}
           onDayPress={(day: DateData) => setSelected(day.dateString)}
+          onMonthChange={(monthObj) => {
+            setVisibleMonth(monthObj.month - 1);
+            setVisibleYear(monthObj.year);
+          }}
           dayComponent={({ date, state }) => {
             const eventCount = date?.dateString
               ? events[date.dateString]
@@ -117,30 +226,33 @@ export default function AppointmentsScreen() {
             );
           }}
         />
-        <View>
-          <Text className="text-2xl text-primary">June 26</Text>
-          <AppointmentCard
-            info={{
-              name: "Blood Test",
-              comments: "2 hours of fasting before test",
-              date: "Monday, June 9",
-              time: "2:30 pm",
-              location: "Saint John’s Hospital",
-            }}
-          ></AppointmentCard>
-          <AppointmentCard
-            info={{
-              name: "Dermatology",
-              date: "Monday, June 9",
-              time: "2:30 pm",
-              location: "Saint John’s Hospital",
-            }}
-          ></AppointmentCard>
-        </View>
-      </ScrollView>
+        <SectionList
+          sections={filteredGroupedAppointments}
+          keyExtractor={(item, idx) => item.id?.toString() || idx.toString()}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text className="text-2xl text-primary mt-4 mb-2">{title}</Text>
+          )}
+          renderItem={({ item }) => (
+            <AppointmentCard
+              info={{
+                name: item.name,
+                comments: item.comments,
+                date: formatDate(item.date),
+                time: formatTime(item.time),
+                location: item.address,
+              }}
+            />
+          )}
+          stickySectionHeadersEnabled={false}
+          contentContainerStyle={{ paddingBottom: 80 }}
+        />
+      </View>
       <NewAppointmentModal
         visible={modalVisible}
-        onClose={() => setModalVisible(false)}
+        onClose={() => {
+          setModalVisible(false);
+          fetchAppointments();
+        }}
       />
     </SafeAreaView>
   );

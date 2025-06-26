@@ -4,6 +4,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { Platform, TouchableOpacity } from "react-native";
 import { BlurView } from "expo-blur";
 import * as DocumentPicker from "expo-document-picker";
+import ExamsService from "../../services/exams";
 
 type NewExamModalProps = {
   visible: boolean;
@@ -22,13 +23,24 @@ const NewExamModal: React.FC<NewExamModalProps> = ({ visible, onClose }) => {
     setShowDatePicker(false);
   };
 
-  const handleSave = () => {
-    // Save logic here
-    onClose();
-    setName("");
-    setExamDate("");
-    setFile(null);
-    setAnalyzeWithAI(false);
+  const handleSave = async () => {
+    try {
+      await ExamsService.create({
+        name,
+        examDate,
+        analyzeWithAI,
+        file,
+      });
+    } catch (error) {
+      // Optionally handle error (e.g., show a toast)
+      console.error("Failed to create exam", error);
+    } finally {
+      onClose();
+      setName("");
+      setExamDate("");
+      setFile(null);
+      setAnalyzeWithAI(false);
+    }
   };
 
   const handlePickFile = async () => {

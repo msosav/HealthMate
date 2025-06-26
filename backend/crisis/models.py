@@ -7,7 +7,6 @@ class Crisis(TimeStampedModel):
     start_date = models.DateField()
     end_date = models.DateField()
     comments = models.TextField(blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='crises')
 
     def __str__(self):
         return self.name

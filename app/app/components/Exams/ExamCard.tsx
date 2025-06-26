@@ -23,7 +23,7 @@ const ExamCard: React.FC<ExamCardProps> = ({
       >
         <View className="items-start p-5">
           <Text className="text-base text-primary font-bold">{info.name}</Text>
-          <Text className="text-base text-primary">{info.date}</Text>
+          <Text className="text-base text-primary">{info.formattedDate}</Text>
         </View>
       </TouchableOpacity>
       <ExamInfoModal

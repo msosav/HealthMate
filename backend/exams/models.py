@@ -12,7 +12,6 @@ class Exam(TimeStampedModel):
     date = models.DateField()
     file = models.FileField(upload_to=exam_file_path, null=True, blank=True)  # Allow null/blank
     ai_summary = models.TextField(null=True, blank=True)  # Allow null/blank
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='exams')
 
     def __str__(self):
         return f"{self.name} ({self.user})"

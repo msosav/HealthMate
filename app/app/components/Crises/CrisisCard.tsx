@@ -13,7 +13,7 @@ const CrisisCard: React.FC<CrisisCardProps> = ({
   info,
 }: CrisisCardProps) => (
   <TouchableOpacity
-    className={`h-60 rounded-xl items-center justify-center m-2 ${squareColor}`}
+    className={`rounded-xl items-center justify-center m-2 ${squareColor}`}
   >
     <View className="items-start p-8">
       <Text className="text-base text-primary font-bold">{info.name}</Text>
