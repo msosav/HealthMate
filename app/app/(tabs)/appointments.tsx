@@ -8,6 +8,7 @@ import {
   ScrollView,
   Pressable,
   SectionList,
+  RefreshControl,
 } from "react-native";
 import { Calendar, DateData } from "react-native-calendars";
 import AppointmentCard from "@/app/components/Appointments/AppointmentCard";
@@ -25,6 +26,7 @@ export default function AppointmentsScreen() {
   const [visibleYear, setVisibleYear] = useState<number>(
     new Date().getFullYear()
   );
+  const [refreshing, setRefreshing] = useState(false);
 
   // Move fetchAppointments outside useEffect so it can be called elsewhere
   const fetchAppointments = async () => {
@@ -48,6 +50,12 @@ export default function AppointmentsScreen() {
   useEffect(() => {
     fetchAppointments();
   }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchAppointments();
+    setRefreshing(false);
+  };
 
   // Prepare markedDates for Calendar
   const markedDates = Object.fromEntries(
@@ -245,6 +253,9 @@ export default function AppointmentsScreen() {
           )}
           stickySectionHeadersEnabled={false}
           contentContainerStyle={{ paddingBottom: 80 }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       </View>
       <NewAppointmentModal
