@@ -21,6 +21,8 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
   const [comments, setComments] = React.useState("");
   const [showDatePicker, setShowDatePicker] = React.useState(false);
   const [showTimePicker, setShowTimePicker] = React.useState(false);
+  const [tempDate, setTempDate] = React.useState<string>("");
+  const [tempTime, setTempTime] = React.useState<string>("");
 
   // Function to close both pickers
   const closePickers = () => {
@@ -91,6 +93,7 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
                 <TouchableOpacity
                   className="flex-1"
                   onPress={() => {
+                    setTempDate(date || new Date().toISOString().split("T")[0]);
                     setShowDatePicker(true);
                   }}
                   activeOpacity={0.7}
@@ -107,6 +110,7 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
                 <TouchableOpacity
                   className="flex-1"
                   onPress={() => {
+                    setTempTime(time || "");
                     setShowTimePicker(true);
                   }}
                   activeOpacity={0.7}
@@ -122,40 +126,98 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
                 </TouchableOpacity>
               </View>
               {showDatePicker && (
-                <DateTimePicker
-                  value={date ? new Date(date) : new Date()}
-                  mode="date"
-                  display={Platform.OS === "ios" ? "spinner" : "default"}
-                  themeVariant="light"
-                  onChange={(_, selectedDate) => {
-                    setShowDatePicker(false);
-                    if (selectedDate) {
-                      setDate(selectedDate.toISOString().split("T")[0]);
-                    }
-                  }}
-                />
+                <View>
+                  <DateTimePicker
+                    value={tempDate ? new Date(tempDate) : new Date()}
+                    mode="date"
+                    display={Platform.OS === "ios" ? "spinner" : "default"}
+                    themeVariant="light"
+                    onChange={(_, selectedDate) => {
+                      if (Platform.OS === "ios") {
+                        if (selectedDate) {
+                          setTempDate(selectedDate.toISOString().split("T")[0]);
+                        }
+                      } else {
+                        setShowDatePicker(false);
+                        if (selectedDate) {
+                          setDate(selectedDate.toISOString().split("T")[0]);
+                        }
+                      }
+                    }}
+                  />
+                  {Platform.OS === "ios" && (
+                    <View className="flex-row justify-center mt-2 py-2">
+                      <Pressable
+                        onPress={() => {
+                          setShowDatePicker(false);
+                          setDate(tempDate);
+                        }}
+                        className="bg-primary rounded-lg px-3 py-2 text-center"
+                      >
+                        <Text className="text-white font-bold text-center">
+                          Done
+                        </Text>
+                      </Pressable>
+                    </View>
+                  )}
+                </View>
               )}
               {showTimePicker && (
-                <DateTimePicker
-                  value={time ? new Date(`1970-01-01T${time}:00`) : new Date()}
-                  mode="time"
-                  display={Platform.OS === "ios" ? "spinner" : "default"}
-                  themeVariant="light"
-                  onChange={(_, selectedTime) => {
-                    setShowTimePicker(false);
-                    if (selectedTime) {
-                      const hours = selectedTime
-                        .getHours()
-                        .toString()
-                        .padStart(2, "0");
-                      const minutes = selectedTime
-                        .getMinutes()
-                        .toString()
-                        .padStart(2, "0");
-                      setTime(`${hours}:${minutes}`);
+                <View>
+                  <DateTimePicker
+                    value={
+                      tempTime
+                        ? new Date(`1970-01-01T${tempTime || "00:00"}:00`)
+                        : new Date()
                     }
-                  }}
-                />
+                    mode="time"
+                    display={Platform.OS === "ios" ? "spinner" : "default"}
+                    themeVariant="light"
+                    onChange={(_, selectedTime) => {
+                      if (Platform.OS === "ios") {
+                        if (selectedTime) {
+                          const hours = selectedTime
+                            .getHours()
+                            .toString()
+                            .padStart(2, "0");
+                          const minutes = selectedTime
+                            .getMinutes()
+                            .toString()
+                            .padStart(2, "0");
+                          setTempTime(`${hours}:${minutes}`);
+                        }
+                      } else {
+                        setShowTimePicker(false);
+                        if (selectedTime) {
+                          const hours = selectedTime
+                            .getHours()
+                            .toString()
+                            .padStart(2, "0");
+                          const minutes = selectedTime
+                            .getMinutes()
+                            .toString()
+                            .padStart(2, "0");
+                          setTime(`${hours}:${minutes}`);
+                        }
+                      }
+                    }}
+                  />
+                  {Platform.OS === "ios" && (
+                    <View className="flex-row justify-center mt-2 py-2">
+                      <Pressable
+                        onPress={() => {
+                          setShowTimePicker(false);
+                          setTime(tempTime);
+                        }}
+                        className="bg-primary rounded-lg px-3 py-2 text-center"
+                      >
+                        <Text className="text-white font-bold text-center">
+                          Done
+                        </Text>
+                      </Pressable>
+                    </View>
+                  )}
+                </View>
               )}
               <TextInput
                 placeholder="Address"
