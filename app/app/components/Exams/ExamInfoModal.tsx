@@ -41,7 +41,7 @@ const ExamInfoModal: React.FC<ExamInfoModalProps> = ({
                 </Pressable>
               </View>
               <View>
-                <Text className="text-xl">{info.date}</Text>
+                <Text className="text-xl">{info.formattedDate}</Text>
               </View>
               <View>
                 {info.file ? (

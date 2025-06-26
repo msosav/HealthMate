@@ -89,17 +89,27 @@ export default function ExamsScreen() {
         {sortedMonthYears.map((monthYear) => (
           <View key={monthYear}>
             <Text className="text-2xl text-primary mb-2">{monthYear}</Text>
-            {groupedExams[monthYear].map((exam) => (
-              <Pressable
-                key={exam.id}
-                onPress={() => {
-                  setSelectedExam(exam);
-                  setInfoModalVisible(true);
-                }}
-              >
-                <ExamCard info={exam} />
-              </Pressable>
-            ))}
+            {groupedExams[monthYear].map((exam) => {
+              const formattedDate = new Date(exam.date).toLocaleDateString(
+                "en-US",
+                {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                }
+              );
+              return (
+                <Pressable
+                  key={exam.id}
+                  onPress={() => {
+                    setSelectedExam(exam);
+                    setInfoModalVisible(true);
+                  }}
+                >
+                  <ExamCard info={{ ...exam, formattedDate }} />
+                </Pressable>
+              );
+            })}
           </View>
         ))}
       </ScrollView>
