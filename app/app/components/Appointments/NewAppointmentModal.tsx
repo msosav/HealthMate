@@ -3,6 +3,7 @@ import { Text, View, Modal, Pressable, TextInput } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Platform, TouchableOpacity } from "react-native";
 import { BlurView } from "expo-blur";
+import AppointmentsService from "../../services/appointments";
 
 type NewAppointmentModalProps = {
   visible: boolean;
@@ -27,14 +28,29 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
     setShowTimePicker(false);
   };
 
-  const handleSave = () => {
-    // Save logic here
-    onClose();
-    setName("");
-    setDate("");
-    setTime("");
-    setAddress("");
-    setComments("");
+  const handleSave = async () => {
+    // Format time as HH:mm:00
+    const formattedTime = time
+      ? `${time.length === 5 ? time : time + ":00"}`
+      : "";
+    const appointmentData = {
+      name,
+      date,
+      time: formattedTime,
+      address,
+      comments,
+    };
+    try {
+      await AppointmentsService.create(appointmentData);
+      onClose();
+      setName("");
+      setDate("");
+      setTime("");
+      setAddress("");
+      setComments("");
+    } catch (error) {
+      console.error("Failed to create appointment", error);
+    }
   };
 
   return (

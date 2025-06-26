@@ -8,7 +8,6 @@ class Appointment(TimeStampedModel):
     time = models.TimeField()
     address = models.CharField(max_length=255)
     comments = models.TextField(blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments')
 
     def __str__(self):
         return f"{self.name} on {self.date} at {self.time}"

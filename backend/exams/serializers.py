@@ -6,4 +6,4 @@ class ExamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exam
-        fields = ['id', 'name', 'date', 'file', 'user', 'ai_summary']
+        fields = ['id', 'name', 'date', 'file', 'ai_summary']

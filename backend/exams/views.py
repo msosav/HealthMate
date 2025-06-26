@@ -9,7 +9,6 @@ from rest_framework.permissions import IsAuthenticated
 class ExamViewSet(viewsets.ModelViewSet):
     queryset = Exam.objects.all()
     serializer_class = ExamSerializer
-    permission_classes = [IsAuthenticated]  # Adjust as needed
 
     def create(self, request, *args, **kwargs):
         # Extract file and data
@@ -33,7 +32,7 @@ class ExamViewSet(viewsets.ModelViewSet):
                 for chunk in file.chunks():
                     destination.write(chunk)
             # Update file_path field (relative to MEDIA_ROOT)
-            exam.file = f'files/{user_id}/{exam_id}/{file.name}'
+            exam.file = f'files/{exam_id}/{file.name}'
 
         # Generate ai_summary (dummy example)
         exam.ai_summary = "AI summary generated here."
