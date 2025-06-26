@@ -45,7 +45,7 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
       onRequestClose={onClose}
     >
       <View className="flex-1">
-        <BlurView intensity={20} tint="light" className="flex-1">
+        <BlurView intensity={20} tint="prominent" className="flex-1">
           <View className="flex-1 items-center justify-center">
             <View className="bg-white rounded-2xl p-6 w-11/12 max-w-md">
               <View className="flex-row items-center justify-between mb-4">
