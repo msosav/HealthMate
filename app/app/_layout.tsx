@@ -5,14 +5,12 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import React = require("react");
-import { Header } from "@/components/Header";
-import { SafeAreaView } from "react-native";
 
 import "./globals.css";
 
 export default function RootLayout() {
   const [loaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    Figtree: require("../assets/fonts/Figtree-Regular.ttf"),
   });
 
   if (!loaded) {
@@ -22,7 +20,6 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DefaultTheme}>
-      <Header />
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />

@@ -4,11 +4,12 @@ import {
   ScrollView,
   View,
   SafeAreaView,
+  Text,
 } from "react-native";
 
 import React = require("react");
-import { CustomText } from "@/components/CustomText";
-import { mainColor } from "@/constants/Colors";
+import QuickAccessCard from "@/app/components/Home/QuickAccessCard";
+import UpcommingAppointmentsCard from "@/app/components/Home/UpcommingAppointmentsCard";
 
 export default function HomeScreen() {
   return (
@@ -16,25 +17,72 @@ export default function HomeScreen() {
       style={{
         flex: 1,
         backgroundColor: "#fff",
-        paddingTop: Platform.OS === "android" ? 24 : 0,
       }}
     >
-      <ScrollView
-        contentContainerStyle={{
-          padding: 16,
-          backgroundColor: "#fff",
-        }}
-      >
-        <View style={styles.titleContainer}>
-          <CustomText style={{ fontSize: 32, flexShrink: 1 }} color={mainColor}>
-            Welcome back,
-          </CustomText>
-          <CustomText
-            style={{ fontSize: 32, fontWeight: "bold", flexShrink: 1 }}
-            color={mainColor}
+      <ScrollView className="p-8 bg-white">
+        <View>
+          <Text className="text-5xl text-primary">Welcome back,</Text>
+          <Text className="text-5xl font-bold text-primary">Miguel</Text>
+        </View>
+        <View className="mt-8">
+          <Text className="text-2xl text-primary">Quick Actions</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="mt-4"
           >
-            Miguel
-          </CustomText>
+            <QuickAccessCard
+              iconName="flask"
+              label="New exam"
+              squareColor="bg-secondary"
+              circleColor="bg-tertiary"
+              iconColor="#fff"
+            />
+            <QuickAccessCard
+              iconName="calendar-alt"
+              label="New appointment"
+              squareColor="bg-secondary"
+              circleColor="bg-tertiary"
+              iconColor="#fff"
+            />
+            <QuickAccessCard
+              iconName="briefcase-medical"
+              label="New crisis"
+              squareColor="bg-secondary"
+              circleColor="bg-tertiary"
+              iconColor="#fff"
+            />
+          </ScrollView>
+        </View>
+        <View className="mt-8">
+          <Text className="text-2xl text-primary">Upcomming appointments</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="mt-4"
+          >
+            <UpcommingAppointmentsCard
+              squareColor="bg-tertiary"
+              name="Blood Test"
+              date="Tuesday, April 17"
+              time="2:30 pm"
+              location="Main Hospital, Room 101"
+            />
+            <UpcommingAppointmentsCard
+              squareColor="bg-tertiary"
+              name="Blood Test"
+              date="Tuesday, April 17"
+              time="2:30 pm"
+              location="Main Hospital, Room 101"
+            />
+            <UpcommingAppointmentsCard
+              squareColor="bg-tertiary"
+              name="Blood Test"
+              date="Tuesday, April 17"
+              time="2:30 pm"
+              location="Main Hospital, Room 101"
+            />
+          </ScrollView>
         </View>
       </ScrollView>
     </SafeAreaView>

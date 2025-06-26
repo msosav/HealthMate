@@ -2,7 +2,7 @@ import { Tabs } from "expo-router";
 import * as React from "react";
 import { Platform } from "react-native";
 
-import { HapticTab } from "@/components/HapticTab";
+import HapticTab from "@/app/components/HapticTab";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 import { tintColorActive, tintColorInactive } from "@/constants/Colors";
