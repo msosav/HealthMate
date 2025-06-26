@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, View, Modal, Pressable } from "react-native";
+import { Text, View, Modal, Pressable, Linking } from "react-native";
 import { BlurView } from "expo-blur";
 
 type ExamInfoModalProps = {
@@ -44,7 +44,20 @@ const ExamInfoModal: React.FC<ExamInfoModalProps> = ({
                 <Text className="text-xl">{info.date}</Text>
               </View>
               <View>
-                <Text>File goes here</Text>
+                {info.file ? (
+                  <Text
+                    className="text-blue-600 underline"
+                    onPress={() => {
+                      if (info.file) {
+                        Linking.openURL(info.file);
+                      }
+                    }}
+                  >
+                    View file
+                  </Text>
+                ) : (
+                  <Text>No file uploaded.</Text>
+                )}
               </View>
               <View>
                 <Text className="text-xl mt-4 underline">AI summary</Text>

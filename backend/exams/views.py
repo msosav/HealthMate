@@ -16,16 +16,24 @@ class ExamViewSet(viewsets.ModelViewSet):
         data = request.data.copy()
         data.pop('file', None)  # Remove file from data for initial save
 
+        # Extract and remove analyze_with_ai from data before serializer
+        analyze_with_ai = data.pop('analyze_with_ai', False)
+        # Convert to boolean if it's a string
+        if isinstance(analyze_with_ai, str):
+            analyze_with_ai = analyze_with_ai.lower() == 'true'
+
         # Save Exam without file and ai_summary
         serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            print(serializer.errors)  # Or use logging
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
         exam = serializer.save()
 
         # Save file if present
         if file:
-            user_id = exam.user.id
             exam_id = exam.id
-            upload_dir = os.path.join(settings.MEDIA_ROOT, 'files', str(user_id), str(exam_id))
+            upload_dir = os.path.join(settings.MEDIA_ROOT, 'files', str(exam_id))
             os.makedirs(upload_dir, exist_ok=True)
             file_path = os.path.join(upload_dir, file.name)
             with open(file_path, 'wb+') as destination:
@@ -34,8 +42,9 @@ class ExamViewSet(viewsets.ModelViewSet):
             # Update file_path field (relative to MEDIA_ROOT)
             exam.file = f'files/{exam_id}/{file.name}'
 
-        # Generate ai_summary (dummy example)
-        exam.ai_summary = "AI summary generated here."
+        # Only generate ai_summary if requested
+        if analyze_with_ai:
+            exam.ai_summary = "AI summary generated here."
 
         exam.save()
         response_serializer = self.get_serializer(exam)
