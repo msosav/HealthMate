@@ -44,16 +44,22 @@ export default function HomeScreen() {
     fetchAppointments();
   }, []);
 
-  // Helper to format date as 'Day, Month Date'
+  // Helper to format date as 'Friday, April 27' with capitalized weekday and month
   function formatDate(dateStr: string) {
     if (!dateStr) return "";
     const [year, month, day] = dateStr.split("-").map(Number);
     const d = new Date(year, month - 1, day);
-    return d.toLocaleDateString(undefined, {
+    let formatted = d.toLocaleDateString(undefined, {
       weekday: "long",
       month: "long",
       day: "numeric",
     });
+    // Capitalize first letter of weekday and month
+    formatted = formatted.replace(
+      /^(\w)(\w+), (\w)(\w+)/,
+      (m, a, b, c, d) => `${a.toUpperCase()}${b}, ${c.toUpperCase()}${d}`
+    );
+    return formatted;
   }
   // Helper to format time as 'h:mm a' or 'ha'
   function formatTime(timeStr: string) {

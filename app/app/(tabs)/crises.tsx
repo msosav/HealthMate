@@ -4,9 +4,9 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   SafeAreaView,
   Pressable,
+  SectionList,
 } from "react-native";
 import CrisisCard from "@/app/components/Crises/CrisisCard";
 import NewCrisisModal from "@/app/components/Crises/NewCrisisModal";
@@ -29,7 +29,7 @@ export default function CrisesScreen() {
     fetchCrises();
   }, []);
 
-  // Group crises by month and year
+  // Group crises by month and year for SectionList
   const groupedCrises = React.useMemo(() => {
     const groups: { [key: string]: any[] } = {};
     crises.forEach((crisis) => {
@@ -56,16 +56,22 @@ export default function CrisesScreen() {
       .map(([title, data]) => ({ title, data }));
   }, [crises]);
 
-  // Helper to format date as 'Day, Month Date'
+  // Helper to format date as 'Friday, April 27' with capitalized weekday and month
   function formatDate(dateStr: string) {
     if (!dateStr) return "";
     const [year, month, day] = dateStr.split("-").map(Number);
     const d = new Date(year, month - 1, day);
-    return d.toLocaleDateString(undefined, {
+    let formatted = d.toLocaleDateString(undefined, {
       weekday: "long",
       month: "long",
       day: "numeric",
     });
+    // Capitalize first letter of weekday and month
+    formatted = formatted.replace(
+      /^(\w)(\w+), (\w)(\w+)/,
+      (m, a, b, c, d) => `${a.toUpperCase()}${b}, ${c.toUpperCase()}${d}`
+    );
+    return formatted;
   }
 
   return (
@@ -80,9 +86,14 @@ export default function CrisesScreen() {
         onClose={() => setModalVisible(false)}
         onCreated={fetchCrises}
       />
-      <ScrollView
+      <View
         className="p-8 bg-white"
-        contentContainerStyle={{ paddingBottom: 80 }}
+        style={{
+          flex: 1,
+          padding: 32,
+          backgroundColor: "#fff",
+          paddingBottom: 80,
+        }}
       >
         <View className="flex-row items-center justify-between mb-4">
           <Text className="text-4xl text-primary font-bold">My crises</Text>
@@ -96,23 +107,26 @@ export default function CrisesScreen() {
             </Text>
           </Pressable>
         </View>
-        {groupedCrises.map((section) => (
-          <View key={section.title}>
-            <Text className="text-2xl text-primary mb-2">{section.title}</Text>
-            {section.data.map((crisis, idx) => (
-              <CrisisCard
-                key={crisis.id || idx}
-                info={{
-                  name: crisis.name,
-                  comments: crisis.comments,
-                  startDate: formatDate(crisis.start_date),
-                  endDate: formatDate(crisis.end_date),
-                }}
-              />
-            ))}
-          </View>
-        ))}
-      </ScrollView>
+        <SectionList
+          sections={groupedCrises}
+          keyExtractor={(item, idx) => item.id?.toString() || idx.toString()}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text className="text-2xl text-primary mb-2">{title}</Text>
+          )}
+          renderItem={({ item }) => (
+            <CrisisCard
+              info={{
+                name: item.name,
+                comments: item.comments,
+                startDate: formatDate(item.start_date),
+                endDate: formatDate(item.end_date),
+              }}
+            />
+          )}
+          stickySectionHeadersEnabled={false}
+          contentContainerStyle={{ paddingBottom: 80 }}
+        />
+      </View>
     </SafeAreaView>
   );
 }

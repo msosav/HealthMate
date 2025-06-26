@@ -122,6 +122,18 @@ export default function AppointmentsScreen() {
     }
   }
 
+  // Helper to format date as 'Friday, April 27'
+  function formatDate(dateStr: string) {
+    if (!dateStr) return "";
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const d = new Date(year, month - 1, day);
+    return d.toLocaleDateString(undefined, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    });
+  }
+
   return (
     <SafeAreaView
       style={{
@@ -225,7 +237,7 @@ export default function AppointmentsScreen() {
               info={{
                 name: item.name,
                 comments: item.comments,
-                date: item.date,
+                date: formatDate(item.date),
                 time: formatTime(item.time),
                 location: item.address,
               }}
