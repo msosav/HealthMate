@@ -23,8 +23,9 @@ def load_qa_chain(vectorstore):
     load_dotenv()  # Required to get GROQ_API_KEY from environment
 
     llm = ChatGroq(
-        temperature=0.0,
-        model_name="llama3-8b-8192"
+    temperature=0.0,
+    model_name="llama3-8b-8192",
+    max_tokens=120 
     )
 
     retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 4})
