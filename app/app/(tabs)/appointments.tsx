@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Text, View, SafeAreaView, ScrollView, Pressable } from "react-native";
 import { Calendar, DateData } from "react-native-calendars";
 import AppointmentCard from "@/app/components/Appointments/AppointmentCard";
+import NewAppointmentModal from "@/app/components/Appointments/NewAppointmentModal";
 
 export default function AppointmentsScreen() {
   // Mock data: Replace with your real data source
@@ -31,6 +32,7 @@ export default function AppointmentsScreen() {
   );
 
   const [selected, setSelected] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <SafeAreaView
@@ -48,7 +50,7 @@ export default function AppointmentsScreen() {
             My appointments
           </Text>
           <Pressable
-            onPress={() => {}}
+            onPress={() => setModalVisible(true)}
             hitSlop={10}
             className="bg-primary text-white w-1/5 rounded-lg py-2 px-6 mt-2"
           >
@@ -136,6 +138,10 @@ export default function AppointmentsScreen() {
           ></AppointmentCard>
         </View>
       </ScrollView>
+      <NewAppointmentModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }
