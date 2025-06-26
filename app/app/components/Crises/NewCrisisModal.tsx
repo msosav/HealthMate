@@ -25,6 +25,8 @@ const NewCrisisModal: React.FC<
     null
   );
   const [pickerEndDate, setPickerEndDate] = React.useState<Date | null>(null);
+  const [tempStartDate, setTempStartDate] = React.useState<string>("");
+  const [tempEndDate, setTempEndDate] = React.useState<string>("");
 
   // Function to close both pickers
   const closePickers = () => {
@@ -89,6 +91,9 @@ const NewCrisisModal: React.FC<
                 <TouchableOpacity
                   className="flex-1"
                   onPress={() => {
+                    setTempStartDate(
+                      startDate || new Date().toISOString().split("T")[0]
+                    );
                     setPickerStartDate(
                       startDate ? new Date(startDate) : new Date()
                     );
@@ -108,6 +113,9 @@ const NewCrisisModal: React.FC<
                 <TouchableOpacity
                   className="flex-1"
                   onPress={() => {
+                    setTempEndDate(
+                      endDate || new Date().toISOString().split("T")[0]
+                    );
                     setPickerEndDate(endDate ? new Date(endDate) : new Date());
                     setEndDatePicker(true);
                   }}
@@ -124,43 +132,92 @@ const NewCrisisModal: React.FC<
                 </TouchableOpacity>
               </View>
               {showStartDatePicker && (
-                <DateTimePicker
-                  value={
-                    pickerStartDate ||
-                    (startDate ? new Date(startDate) : new Date())
-                  }
-                  mode="date"
-                  display={Platform.OS === "ios" ? "spinner" : "default"}
-                  themeVariant="light"
-                  onChange={(_, selectedDate) => {
-                    if (selectedDate) {
-                      setPickerStartDate(selectedDate);
-                      setStartDate(selectedDate.toISOString().split("T")[0]);
-                      setStartDatePicker(false);
-                    } else {
-                      setStartDatePicker(false);
+                <View>
+                  <DateTimePicker
+                    value={
+                      pickerStartDate ||
+                      (startDate ? new Date(startDate) : new Date())
                     }
-                  }}
-                />
+                    mode="date"
+                    display={Platform.OS === "ios" ? "spinner" : "default"}
+                    themeVariant="light"
+                    onChange={(_, selectedDate) => {
+                      if (Platform.OS === "ios") {
+                        if (selectedDate) {
+                          setTempStartDate(
+                            selectedDate.toISOString().split("T")[0]
+                          );
+                          setPickerStartDate(selectedDate);
+                        }
+                      } else {
+                        setStartDatePicker(false);
+                        if (selectedDate) {
+                          setStartDate(
+                            selectedDate.toISOString().split("T")[0]
+                          );
+                        }
+                      }
+                    }}
+                  />
+                  {Platform.OS === "ios" && (
+                    <View className="flex-row justify-center mt-2 py-2">
+                      <Pressable
+                        onPress={() => {
+                          setStartDatePicker(false);
+                          setStartDate(tempStartDate);
+                        }}
+                        className="bg-primary rounded-lg px-3 py-2 text-center"
+                      >
+                        <Text className="text-white font-bold text-center">
+                          Done
+                        </Text>
+                      </Pressable>
+                    </View>
+                  )}
+                </View>
               )}
               {showEndDatePicker && (
-                <DateTimePicker
-                  value={
-                    pickerEndDate || (endDate ? new Date(endDate) : new Date())
-                  }
-                  mode="date"
-                  display={Platform.OS === "ios" ? "spinner" : "default"}
-                  themeVariant="light"
-                  onChange={(_, selectedDate) => {
-                    if (selectedDate) {
-                      setPickerEndDate(selectedDate);
-                      setEndDate(selectedDate.toISOString().split("T")[0]);
-                      setEndDatePicker(false);
-                    } else {
-                      setEndDatePicker(false);
+                <View>
+                  <DateTimePicker
+                    value={
+                      pickerEndDate ||
+                      (endDate ? new Date(endDate) : new Date())
                     }
-                  }}
-                />
+                    mode="date"
+                    display={Platform.OS === "ios" ? "spinner" : "default"}
+                    themeVariant="light"
+                    onChange={(_, selectedDate) => {
+                      if (Platform.OS === "ios") {
+                        if (selectedDate) {
+                          setTempEndDate(
+                            selectedDate.toISOString().split("T")[0]
+                          );
+                          setPickerEndDate(selectedDate);
+                        }
+                      } else {
+                        setEndDatePicker(false);
+                        if (selectedDate) {
+                          setEndDate(selectedDate.toISOString().split("T")[0]);
+                        }
+                      }
+                    }}
+                  />
+                  {Platform.OS === "ios" && (
+                    <View className="flex-row justify-center mt-2 py-2">
+                      <Pressable
+                        onPress={() => {
+                          setEndDatePicker(false);
+                          setEndDate(tempEndDate);
+                        }}
+                        className="bg-primary rounded-lg px-3 py-2"
+                      >
+                        <Text className="text-white font-bold text-center">
+                          Done
+                        </Text>
+                      </Pressable>
+                    </View>
+                  )}
+                </View>
               )}
               <TextInput
                 placeholder="Comments"

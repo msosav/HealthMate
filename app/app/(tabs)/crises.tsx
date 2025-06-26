@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Pressable,
   SectionList,
+  RefreshControl,
 } from "react-native";
 import CrisisCard from "@/app/components/Crises/CrisisCard";
 import NewCrisisModal from "@/app/components/Crises/NewCrisisModal";
@@ -15,6 +16,7 @@ import CrisesService from "@/app/services/crises";
 export default function CrisesScreen() {
   const [modalVisible, setModalVisible] = React.useState(false);
   const [crises, setCrises] = React.useState<any[]>([]);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const fetchCrises = async () => {
     try {
@@ -28,6 +30,12 @@ export default function CrisesScreen() {
   React.useEffect(() => {
     fetchCrises();
   }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchCrises();
+    setRefreshing(false);
+  };
 
   // Group crises by month and year for SectionList
   const groupedCrises = React.useMemo(() => {
@@ -125,6 +133,9 @@ export default function CrisesScreen() {
           )}
           stickySectionHeadersEnabled={false}
           contentContainerStyle={{ paddingBottom: 80 }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       </View>
     </SafeAreaView>

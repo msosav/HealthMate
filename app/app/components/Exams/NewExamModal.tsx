@@ -17,6 +17,7 @@ const NewExamModal: React.FC<NewExamModalProps> = ({ visible, onClose }) => {
   const [showDatePicker, setShowDatePicker] = React.useState(false);
   const [file, setFile] = React.useState<any>(null);
   const [analyzeWithAI, setAnalyzeWithAI] = React.useState(false);
+  const [tempExamDate, setTempExamDate] = React.useState<string>("");
 
   // Function to close the date picker
   const closePickers = () => {
@@ -91,7 +92,12 @@ const NewExamModal: React.FC<NewExamModalProps> = ({ visible, onClose }) => {
               />
               <TouchableOpacity
                 className="w-full mb-3"
-                onPress={() => setShowDatePicker(true)}
+                onPress={() => {
+                  setTempExamDate(
+                    examDate || new Date().toISOString().split("T")[0]
+                  );
+                  setShowDatePicker(true);
+                }}
                 activeOpacity={0.7}
               >
                 <TextInput
@@ -104,18 +110,43 @@ const NewExamModal: React.FC<NewExamModalProps> = ({ visible, onClose }) => {
                 />
               </TouchableOpacity>
               {showDatePicker && (
-                <DateTimePicker
-                  value={examDate ? new Date(examDate) : new Date()}
-                  mode="date"
-                  display={Platform.OS === "ios" ? "spinner" : "default"}
-                  themeVariant="light"
-                  onChange={(_, selectedDate) => {
-                    setShowDatePicker(false);
-                    if (selectedDate) {
-                      setExamDate(selectedDate.toISOString().split("T")[0]);
-                    }
-                  }}
-                />
+                <View>
+                  <DateTimePicker
+                    value={tempExamDate ? new Date(tempExamDate) : new Date()}
+                    mode="date"
+                    display={Platform.OS === "ios" ? "spinner" : "default"}
+                    themeVariant="light"
+                    onChange={(_, selectedDate) => {
+                      if (Platform.OS === "ios") {
+                        if (selectedDate) {
+                          setTempExamDate(
+                            selectedDate.toISOString().split("T")[0]
+                          );
+                        }
+                      } else {
+                        setShowDatePicker(false);
+                        if (selectedDate) {
+                          setExamDate(selectedDate.toISOString().split("T")[0]);
+                        }
+                      }
+                    }}
+                  />
+                  {Platform.OS === "ios" && (
+                    <View className="flex-row justify-center mt-2 py-2">
+                      <Pressable
+                        onPress={() => {
+                          setShowDatePicker(false);
+                          setExamDate(tempExamDate);
+                        }}
+                        className="bg-primary rounded-lg px-3 py-2 text-center"
+                      >
+                        <Text className="text-white font-bold text-center">
+                          Done
+                        </Text>
+                      </Pressable>
+                    </View>
+                  )}
+                </View>
               )}
               <TouchableOpacity
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 mb-3 bg-tertiary flex-row items-center"
