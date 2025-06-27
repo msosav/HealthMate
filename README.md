@@ -1,3 +1,5 @@
+![HealthMate Banner](./res/banner.png)
+
 # HealthMate
 
 HealthMate is a comprehensive health management application designed to help users track appointments, manage crises, and monitor exams. The project consists of a Django backend (REST API) and a React Native frontend (Expo), with additional support for Retrieval-Augmented Generation (RAG) features.
